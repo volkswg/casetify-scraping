@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 
 Case
+File_Template/*.xlsx
+Mass_Upload_File/*.xlsx
 # C extensions
 *.so
 
