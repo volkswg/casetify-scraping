@@ -124,7 +124,6 @@ def getProductData(url, first_time_popup):
     # transform product data
     transformedProdOpts = Data.transformProdOpt(prodOptList)
     transformedProdOpts['imageList'] = prodImgUrlList
-    Logger.logDebug(transformedProdOpts)
     return transformedProdOpts
 
 if __name__ == "__main__":
@@ -135,8 +134,6 @@ if __name__ == "__main__":
   for idx, e_link_path in enumerate(prodUrlList):
     productDetail = getProductData(e_link_path, idx == 0)
     productList.append(productDetail)
-  
-  # Logger.logDebug(productList)
   
   newMassUploadFile = ShopeeTemplate.generateNewSimpleMassUploadFile(TEMPLATE_FILENAME)
   Excel.editExcelfile(newMassUploadFile, productList)
