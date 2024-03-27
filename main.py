@@ -5,13 +5,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.mouse_button import MouseButton
+from selenium.webdriver.common.keys import Keys
 
 from module import Logger, String, Math, File, Excel, ShopeeTemplate, Data
 
 import time
+import inquirer
+import os
 
 PRODUCT_LINK_FILENAME = "productUrlList.txt"
-TEMPLATE_FILENAME = 'shopee_simple_template_2Usneaker.xlsx'
+TEMPLATE_FILENAME = ''
+IS_COLABS = False
+NEED_LOGIN = False
 
 def clickCurrentLocation():
   action = ActionBuilder(driver)
@@ -42,7 +47,7 @@ def closeSignUpIframe():
   driver.switch_to.default_content()
   Logger.logSuccess('Closed Sign Up Popup')
 
-def getProductDetail():
+def getProductDetail(is_preorder = False):
   Logger.logDebug('Get Product detail')
   # check item is not available
   waitListContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "waitlist-form-container")]')
@@ -68,14 +73,18 @@ def getProductDetail():
   
   priceElem = findElement(By.XPATH, '//div[contains(@class, "cart-item-container")]//div[contains(@class,"item-price")]')
   price = String.convertPriceToInt(priceElem[0].text)
-  finalPrice = Math.calculateSellingPrice(price)
+  finalPrice = Math.calculateSellingPrice(price, is_preorder, IS_COLABS)
   
   cartContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "cart-item-container")]//div[contains(@class,"product-info")]')
   productInfoText = String.replaceForbiddenWord(cartContainer[0].text)
   extactedDetail = String.extractProductDetail(productInfoText)
   
+  prefixTitleText = '[พร้อมส่ง] CASETiFY | '
+  if is_preorder == True:
+    prefixTitleText = ''
+  
   return {
-    'title': f"CASETiFY | {extactedDetail['productName']}",
+    'title': f"{prefixTitleText}{extactedDetail['productName']}",
     'description': productInfoText,
     'price': finalPrice,
     'caseType': extactedDetail['caseType'],
@@ -83,6 +92,17 @@ def getProductDetail():
     'color': extactedDetail['color'],
     'imageSrc': srcUrl
   }
+  
+def LoginFunction(username, password):
+  driver.get('https://www.casetify.com/sign_up_page')
+  signInBtn = findElement(By.XPATH,'//a[contains(@class, "action-link")]')
+  signInBtn[1].click()
+  findElement(By.ID,'log-in-email')[0].send_keys(username)
+  findElement(By.ID,'log-in-password')[0].send_keys(password)
+  findElement(By.ID,'log-in-password')[0].send_keys(Keys.ENTER)
+  time.sleep(10)
+  driver.get('https://casetifycolab.page.link/doraemon')
+  time.sleep(5)
 
 def getProductData(url, first_time_popup):
     driver.get(url)
@@ -129,12 +149,31 @@ def getProductData(url, first_time_popup):
 if __name__ == "__main__":
   productList = []
   prodUrlList = File.readFile(PRODUCT_LINK_FILENAME)
+  templateFilenames = os.listdir('File_Template')
+  templateFilenames = [filename for filename in templateFilenames if filename.endswith('.xlsx')]
+  
+  questions = [
+    inquirer.List('shopeeTemplateFilename',
+      message="Which Template do you want?",
+      choices=templateFilenames,
+    ),
+    inquirer.Confirm("isColab", message="Is This Co-Labs?", default=True),
+    inquirer.Confirm('needLogin', message="Is this session need login?", default=False)
+  ]
+  answers = inquirer.prompt(questions)
+  
+  TEMPLATE_FILENAME = answers["shopeeTemplateFilename"]
+  IS_COLABS = answers['isColab']
+  NEED_LOGIN = answers['needLogin']
   driver = webdriver.Chrome()
+  
+  if NEED_LOGIN == True:
+    LoginFunction('passakorn.s@icloud.com','Passakorn2')
 
   for idx, e_link_path in enumerate(prodUrlList):
     productDetail = getProductData(e_link_path, idx == 0)
+    # print(productDetail)
     productList.append(productDetail)
   
   newMassUploadFile = ShopeeTemplate.generateNewSimpleMassUploadFile(TEMPLATE_FILENAME)
   Excel.editExcelfile(newMassUploadFile, productList)
-  

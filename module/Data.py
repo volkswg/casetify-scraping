@@ -3,11 +3,16 @@ def transformProdOpt(product_options):
   caseTypeMapper = {
     "Ultra Bounce Case MS": "",
     "Bounce Case MS": "",
-    "Impact Ring Stand Case MS": "",
-    "Impact Case MS": "ImpactCaseMS",
-    "Clear Case MS": "ClearCaseMS",
-    "Mirror Case MS": "MirrorCaseMS",
-    "Impact Case": "ImpactCase"
+    "Pride Impact Case MS": "",
+    "Impact Ring Stand Case MS": "MagSafe/RingStand",
+    "Impact Case MS": "MagSafe/Impact",
+    "Clear Case MS": "MagSafe/Clear",
+    "Clear Case": "Clear",
+    "Mirror Case MS": "MagSafe/Mirror",
+    "Impact Case": "Impact",
+    "Leather Case MS": "MagSafe/Leather",
+    "Impact Ring Stand Case": "",
+    "Mirror Case": "Mirror",
   }
   prodOptList = [{k: v for k, v in d.items() if k != 'title' and k != 'description'} for d in product_options]
   result = []
@@ -19,6 +24,6 @@ def transformProdOpt(product_options):
       result.append(eProdOpt)
   return {
     'productName': firstProdOpt['title'],
-    'description': firstProdOpt['description'],
+    'description': f"✅ จำหน่ายสินค้าแท้จาก Casetify Officials Store\n✅ มีประกันสินค้า 12 เดือน\n✅ ไม่ต้องเสียภาษีนำเข้าเอง\n✅ ได้สินค้าไวแน่นอน",
     'options': result
   }

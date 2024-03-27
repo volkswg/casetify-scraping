@@ -5,25 +5,27 @@ import openpyxl
 def editExcelfile(filename, product_list):
   columnMapper = {
     "categoryId": 'A',
-    "productName": 'B', 
+    "productName": 'B',
     "productDetail": 'C',
-    "optionRefNumber": "E",
-    "optName1": 'F',
-    "optValue1": 'G',
-    "opt1Img": 'H',
-    "optName2": 'I',
-    "optValue2": 'J',
-    "price": 'K',
-    "quantity": 'L',
-    "weight": 'X',
-    "length": 'Y',
-    "width": 'Z',
-    "height": 'AA',
-    "standardDelivery": 'AB',
-    "instantDelivery": 'AC'
+    "optionRefNumber": "J",
+    "optName1": 'K',
+    "optValue1": 'L',
+    "opt1Img": 'M',
+    "optName2": 'N',
+    "optValue2": 'O',
+    "price": 'P',
+    "quantity": 'Q',
+    "weight": 'AC',
+    "length": 'AD',
+    "width": 'AE',
+    "height": 'AF',
+    "standardDelivery": 'AG',
+    "instantDelivery": 'AH'
   }
   xfile = openpyxl.load_workbook(filename)
   sheet = xfile['แบบฟอร์มการลงสินค้า']
+  
+  deviceOptionList = ['iP15', 'iP15 Pro', 'iP15 ProMax', 'iP14', 'iP14 Pro', 'iP14 ProMax', 'iP13', 'iP13 Pro', 'iP13 ProMax', 'อื่นๆ ทักแชทเลย']
   
   templateStartRow = 7
   # loop through product list
@@ -31,29 +33,33 @@ def editExcelfile(filename, product_list):
   for prodIdx, eProduct in enumerate(product_list):
     # loop through product option list (case type)
     for opt in eProduct['options']:
-      sheet['A' + str(rowNumber)] = '100490' # category id 
-      sheet['B' + str(rowNumber)] = eProduct['productName'] # product name
-      sheet['C' + str(rowNumber)] = eProduct['description'] # product detail
-      sheet['E' + str(rowNumber)] = prodIdx + 1 # product detail
-      sheet['F' + str(rowNumber)] = "ชนิดเคส" # reset
-      sheet['G' + str(rowNumber)] = opt['caseType'] # reset
-      sheet['H' + str(rowNumber)] = opt['imageSrc'] # reset
-      sheet['I' + str(rowNumber)] = "รุ่น" # reset
-      sheet['J' + str(rowNumber)] = "iPhone 15 ProMax" # reset
-      sheet['K' + str(rowNumber)] = opt['price'] # price
-      sheet['L' + str(rowNumber)] = '10' # quantiry
-      # add image 
-      imageList = eProduct['imageList']
-      picColumn = ['O','P','Q','R','S','T','U','V','W']
-      for imgListIndex, eImage in enumerate(imageList):
-        sheet[picColumn[imgListIndex] + str(rowNumber)] = eImage
-      sheet['X' + str(rowNumber)] = '0.3'
-      sheet['Y' + str(rowNumber)] = '12'
-      sheet['Z' + str(rowNumber)] = '22'
-      sheet['AA' + str(rowNumber)] = '3'
-      sheet['AB' + str(rowNumber)] = 'เปิด'
-      sheet['AC' + str(rowNumber)] = 'เปิด'
-      rowNumber += 1
+      for deviceOpt in deviceOptionList:
+        sheet['A' + str(rowNumber)] = '100490' # category id 
+        sheet['B' + str(rowNumber)] = eProduct['productName'] # product name
+        sheet['C' + str(rowNumber)] = eProduct['description'] # product detail
+        sheet['J' + str(rowNumber)] = prodIdx + 1 # product detail
+        sheet['K' + str(rowNumber)] = "ชนิดเคส" # reset
+        sheet['L' + str(rowNumber)] = opt['caseType'] # reset
+        sheet['M' + str(rowNumber)] = opt['imageSrc'] # reset
+        sheet['N' + str(rowNumber)] = "รุ่น" # reset
+        sheet['O' + str(rowNumber)] = deviceOpt # reset
+        sheet['P' + str(rowNumber)] = opt['price'] # price
+        sheet['Q' + str(rowNumber)] = '10' # quantiry
+        # add image 
+        imageList = eProduct['imageList']
+        picColumn = ['T','U','V','W','X','Y','Z','AA','AB']
+        try:
+          for imgListIndex, eImage in enumerate(imageList):
+            sheet[picColumn[imgListIndex] + str(rowNumber)] = eImage
+        except:
+          Logger.logDebug('Image Exceed Limit')
+        sheet['AC' + str(rowNumber)] = '0.3'
+        sheet['AD' + str(rowNumber)] = '12'
+        sheet['AE' + str(rowNumber)] = '22'
+        sheet['AF' + str(rowNumber)] = '3'
+        sheet['AG' + str(rowNumber)] = 'เปิด'
+        # sheet['AC' + str(rowNumber)] = 'เปิด'
+        rowNumber += 1
   xfile.save(filename)
   xfile.close()
 

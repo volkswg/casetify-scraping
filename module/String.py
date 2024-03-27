@@ -19,8 +19,20 @@ def removeExtraFileExt(filename, ext_list = ['.png','.jpg','.jpeg']):
   extIndex = 0
   for eExt in ext_list:
     try:
+      extIndex = filename.index(eExt) + eExt.__len__()
+      break
+    except:
+      continue
+  if extIndex == 0:
+    Logger.logWarn('Not Found Ext')
+    return eExt
+  return filename[0:extIndex]
+
+def removeFileExt(filename, ext_list = ['.xlsx']):
+  extIndex = 0
+  for eExt in ext_list:
+    try:
       extIndex = filename.index(eExt)
-      extIndex = extIndex + eExt.__len__()
       break
     except:
       continue
