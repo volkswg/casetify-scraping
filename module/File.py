@@ -1,5 +1,7 @@
 import shutil
 import os 
+import json
+
 
 def readFile(file_name, mode='r'):
   result = []
@@ -16,6 +18,11 @@ def writeFile(file_name, data, mode):
     
 def copyFile(src, des): 
   return shutil.copyfile(src, des)
+
+def readJSON(filepath):
+  f = open(filepath)
+  data = json.load(f)
+  return data
 
 
 # backup function 

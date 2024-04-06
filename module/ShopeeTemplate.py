@@ -1,11 +1,14 @@
 import os, os.path
-from module import File, Logger, String
+from module import File, Logger, String, Database
 
-def generateNewSimpleMassUploadFile(original_filename):
+def generateNewSimpleMassUploadFile(shop_name):
+  templateFilePath = Database.getTemplateFilenameByShopName(shop_name)
+  templateFileName = templateFilePath.split('/')[-1]
   DIR = 'Mass_Upload_File'
-  fileCount = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
-  filenameWOExt = String.removeFileExt(original_filename, ['.xlsx'])
+  fileCount = len([filename for filename in os.listdir(DIR) if filename.endswith('.xlsx')])
+  Logger.logDebug(fileCount)
+  filenameWOExt = String.removeFileExt(templateFileName, ['.xlsx'])
   newFileName = f"{DIR}/{filenameWOExt}_{fileCount + 1}.xlsx"
-  newFilePath = File.copyFile(f'File_Template/{original_filename}', newFileName)
+  newFilePath = File.copyFile(f'{templateFilePath}', newFileName)
   Logger.logSuccess('New Mass Upload File Created: ' + newFilePath)
   return newFilePath
