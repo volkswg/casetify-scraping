@@ -39,10 +39,10 @@ def editExcelfile(filename, product_list):
         sheet['B' + str(rowNumber)] = eProduct['productName'] # product name
         sheet['C' + str(rowNumber)] = eProduct['description'] # product detail
         sheet['J' + str(rowNumber)] = prodIdx + 1 # product detail
-        sheet['K' + str(rowNumber)] = "ชนิดเคส" # reset
+        sheet['K' + str(rowNumber)] = "Type/Color" # reset
         sheet['L' + str(rowNumber)] = opt['caseType'] # reset
         sheet['M' + str(rowNumber)] = opt['imageSrc'] # reset
-        sheet['N' + str(rowNumber)] = "รุ่น" # reset
+        sheet['N' + str(rowNumber)] = "Device" # reset
         sheet['O' + str(rowNumber)] = deviceOpt # reset
           
         quantity = 10
