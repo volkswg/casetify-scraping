@@ -2,7 +2,6 @@ import shutil
 import os 
 import json
 
-
 def readFile(file_name, mode='r'):
   result = []
   with open(file_name, mode=mode) as f:

@@ -1,4 +1,4 @@
-from module import Logger
+from module import Logger, Database
 
 import openpyxl
 
@@ -25,7 +25,8 @@ def editExcelfile(filename, product_list):
   xfile = openpyxl.load_workbook(filename)
   sheet = xfile['แบบฟอร์มการลงสินค้า']
   
-  deviceOptionList = ['iP15', 'iP15 Pro', 'iP15 ProMax', 'iP14', 'iP14 Pro', 'iP14 ProMax', 'iP13', 'iP13 Pro', 'iP13 ProMax', 'อื่นๆ ทักแชทเลย']
+  deviceOptionList = Database.getDeviceList()
+  # deviceOptionList = ['iP15', 'iP15 Pro', 'iP15 ProMax', 'iP14', 'iP14 Pro', 'iP14 ProMax', 'iP13', 'iP13 Pro', 'iP13 ProMax', 'อื่นๆ ทักแชทเลย']
   
   templateStartRow = 7
   # loop through product list
@@ -43,8 +44,13 @@ def editExcelfile(filename, product_list):
         sheet['M' + str(rowNumber)] = opt['imageSrc'] # reset
         sheet['N' + str(rowNumber)] = "รุ่น" # reset
         sheet['O' + str(rowNumber)] = deviceOpt # reset
+          
+        quantity = 10
+        if 'iP15' not in deviceOpt and 'MagSafe/Mirror' not in opt['caseType'] and len(opt['caseType'].strip().split(' ')) > 1:
+          quantity = 0
+          
         sheet['P' + str(rowNumber)] = opt['price'] # price
-        sheet['Q' + str(rowNumber)] = '10' # quantiry
+        sheet['Q' + str(rowNumber)] = quantity # quantiry
         # add image 
         imageList = eProduct['imageList']
         picColumn = ['T','U','V','W','X','Y','Z','AA','AB']

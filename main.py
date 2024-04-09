@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.mouse_button import MouseButton
 from selenium.webdriver.common.keys import Keys
@@ -14,73 +13,6 @@ PRODUCT_LINK_FILENAME = "productUrlList.txt"
 IS_COLABS = False
 NEED_LOGIN = False
 SHOP_NAME = ''
-
-caseTypeMapper = {
-  "Ultra Bounce Case MS": { 
-    "isSelected": False, 
-    "optValue": "",
-    "displayText": "เคส Ultra Bounce รองรับ MagSafe"
-  },
-  "Bounce Case MS": { 
-    "isSelected": False, 
-    "optValue": "",
-    "displayText": "เคสกันกระแทก Bounce"
-  },
-  "Pride Impact Case MS": { 
-    "isSelected": False,
-    "optValue": "",
-    "displayText": "เคส MagSafe Pride"
-  },
-  "Impact Ring Stand Case MS": {
-    "isSelected": False,
-    "optValue": "MagSafe/RingStand",
-    "displayText": "เคส Impact พร้อมห่วงตั้งรองรับ Magsafe"
-  },
-  "Impact Case MS": {
-    "isSelected": True,
-    "optValue": "MagSafe/Impact",
-    "displayText": "เคสกันกระแทกรองรับ Magsafe"
-  },
-  "Clear Case MS": {
-    "isSelected": True,
-    "optValue": "MagSafe/Clear",
-    "displayText": "เคสใสรองรับ Magsafe"
-  },
-  "Mirror Case MS": { 
-    "isSelected": True,
-    "optValue": "MagSafe/Mirror",
-    "displayText": "เคสกระจกรองรับ Magsafe"
-  },
-  "Leather Case MS": { 
-    "isSelected": True,
-    "optValue": "MagSafe/Leather",
-    "displayText": ""
-  },
-  "Impact Case": {
-    "isSelected": True,
-    "optValue": "Impact",
-    "displayText": ""
-    
-  },
-  "Impact Ring Stand Case": { 
-    "isSelected": False,
-    "optValue": "RingStand",
-    "displayText": ""
-    
-  },
-  "Clear Case": {
-    "isSelected": True,
-    "optValue": "Clear",
-    "displayText": ""
-    
-  },
-  "Mirror Case": {
-    "isSelected": True,
-    "optValue": "Mirror",
-    "displayText": ""
-    
-  },
-}
 
 def clickCurrentLocation():
   action = ActionBuilder(driver)
@@ -104,7 +36,7 @@ def closeSignUpIframe():
   driver.switch_to.default_content()
   Logger.logSuccess('Closed Sign Up Popup')
 
-def getProductDetail(case_type_mapper, is_preorder = False):
+def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
   Logger.logDebug('Get Product detail')
   # check item is not available
   waitListContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "waitlist-form-container")]')
@@ -122,30 +54,63 @@ def getProductDetail(case_type_mapper, is_preorder = False):
   srcUrl = String.removeExtraFileExt(srcUrl)
   
   # addToCartBtn = driver.find_elements(By.XPATH, '//div[@id="PRODUCT_ACTION"]/div[contains(@class, "product-action-btn-container")]/button[contains(@class, "shopping-cart-button")]')
-  [addToCartBtn] = driver.find_elements(By.XPATH, '//div[@action-type="ADD_TO_CART"]')
-  SB.scrollToElement(driver, addToCartBtn)
-  addToCartBtn.click()
+  # fetch product title here
+  titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
+  productTitle = titleElem[0].get_attribute('innerHTML')
   
-  # check cart is ready to copy data 
-  SB.findElements(driver, By.XPATH, '//div[contains(@class, "cart-item-container")]/div/div[not(contains(@class, "disable"))]')
-  
-  priceElem = SB.findElements(driver, By.XPATH, '//div[contains(@class, "cart-item-container")]//div[contains(@class,"item-price")]')
-  price = String.convertPriceToInt(priceElem[0].text)
+  priceElem = case_type_btn.find_element(By.XPATH, './/div[@data-label="case-type-item-price"]')
+  price = String.convertPriceToInt(priceElem.text)
   finalPrice = Math.calculateSellingPrice(price, is_preorder, IS_COLABS)
   
-  cartContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "cart-item-container")]//div[contains(@class,"product-info")]')
-  productInfoText = String.replaceForbiddenWord(cartContainer[0].text)
-  extactedDetail = String.extractProductDetail(productInfoText)
+  # fetch color
+  Logger.logDebug("fetch color")
+  colorItems = SB.findElements(driver, By.XPATH, '//ul[@class="items-container color"]//div[contains(@class, "item")]')
   
-  return {
-    'title': extactedDetail['productName'],
-    'description': 'description',
-    'price': finalPrice,
-    'caseType': extactedDetail['caseType'],
-    'deviceName': extactedDetail['deviceName'],
-    'color': extactedDetail['color'],
-    'imageSrc': srcUrl
-  }
+  productDetailList = []
+  if len(colorItems) > 1:
+    for eColorBtn in colorItems:
+      SB.scrollToElement(driver, eColorBtn)
+      if 'active' not in eColorBtn.get_attribute('class'):
+        eColorBtn.click()
+        
+      colorDidplayTextElem = driver.find_element(By.XPATH, '//div[@data-label="selected-color-name"]')
+      colorInfo = Database.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
+      # Logger.logDebug(colorInfo != False)
+      if colorInfo != False:
+        
+        # fetch image =====
+        productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+        imageContanerLen = productImageContainer.__len__()
+        
+        if imageContanerLen < 1 :
+          Logger.logError('Something Error on fetch option image')
+          
+        srcUrl = productImageContainer[0].get_attribute('src')
+        srcUrl = String.removeExtraFileExt(srcUrl)
+        # fetch image =====
+        # Logger.logDebug(colorInfo['optValue'])
+        productDetailList.append({
+          'title': productTitle,
+          'description': 'description',
+          'price': finalPrice,
+          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)} {colorInfo['optValue']}".strip(),
+          # 'deviceName': extactedDetail['deviceName'],
+          # 'color': extactedDetail['color'],
+          'imageSrc': srcUrl
+        })
+      time.sleep(1)
+  else:
+    productDetailList.append({
+      'title': productTitle,
+      'description': 'description',
+      'price': finalPrice,
+      'caseType': Database.getCaseTypeOptName(case_type_display_txt),
+      # 'deviceName': extactedDetail['deviceName'],
+      # 'color': extactedDetail['color'],
+      'imageSrc': srcUrl
+    })
+  
+  return productDetailList
   
 def LoginFunction(username, password):
   driver.get('https://www.casetify.com/sign_up_page')
@@ -179,7 +144,6 @@ def getProductData(url, first_time_popup, is_preorder = False):
     print('[End] Download Cover image')
     
     # get all product option
-    # caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]//div[contains(@class, "product-selector")]//div[contains(@class, "item")]')
     caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
     prodOptList = []
     caseTypeBtnListLen = caseTypeBtnList.__len__()
@@ -187,28 +151,18 @@ def getProductData(url, first_time_popup, is_preorder = False):
       if caseTypeBtnListLen > 1:
         SB.scrollToElement(driver, eBtn)
         eBtn.click()
-        [caseTypeDescElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
-        
-        needData = True
-        for eKey in list(caseTypeMapper.keys()):
-          eCaseType = caseTypeMapper[eKey]
-
-          if eCaseType['displayText'] == caseTypeDescElem.text:
-            if eCaseType['isSelected'] == False:
-              needData = False
-              break
-        if needData == False:
-          continue
+      [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
+      caseTypeDisplayText = caseTypeDisplayTextElem.text
+      isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
+      if isRequiredCaseType == False:
+        continue
       time.sleep(1)
-      detail = getProductDetail(caseTypeMapper, is_preorder)
-      if detail != False:
-        prodOptList.append(detail)
-        # close cart
-        cartCollapseBtn = SB.findElements(driver, By.XPATH,'//a[contains(@class, "cart-collapse")]')
-        ActionChains(driver).move_to_element_with_offset(cartCollapseBtn[0], -50, 200).perform()
-        clickCurrentLocation()
+      detailList = getProductDetail(eBtn, caseTypeDisplayText, is_preorder)
+      if detailList != False:
+        prodOptList = prodOptList + detailList
     # transform product data
-    transformedProdOpts = Data.transformProdOpt(prodOptList, caseTypeMapper, SHOP_NAME, is_preorder)
+    # Logger.logDebug(prodOptList)
+    transformedProdOpts = Data.transformProdOpt(prodOptList, SHOP_NAME, is_preorder)
     transformedProdOpts['imageList'] = prodImgUrlList
     return transformedProdOpts
 
