@@ -1,4 +1,4 @@
-from module import File
+from module import File, Logger
 
 def getShopList():
   shopDataList = File.readJSON('./Data/shop.json')
@@ -16,8 +16,16 @@ def getProductPredefinedDetialByShopName(shop_name):
   return shopData['product']
 
 # case type 
+def getCaseTypeList():
+  return File.readJSON('./Data/caseType.json')
+
+def getCaseTypeIdByOptName(opt_name):
+  caseTypeList = getCaseTypeList()
+  [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['optValue'] == opt_name, caseTypeList))
+  return filteredCaseTypeInfo['id']
+
 def getCaseTypeByDisplayText(displayText):
-  caseTypeList = File.readJSON('./Data/caseType.json')
+  caseTypeList = getCaseTypeList()
   [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['displayText'] == displayText, caseTypeList))
   return filteredCaseTypeInfo
 
@@ -48,8 +56,8 @@ def getColorInfo(caseTypeDisplayText, colorDisplayText):
 # device list 
 def getDeviceList():
   deviceList = File.readJSON('./Data/deviceList.json')
+  deviceList.sort(key=lambda x: x['order'])
   return deviceList
-
 
 def getSellingPrice(ogPrice, isColab):
   priceMapper = File.readJSON('./Data/priceMapper.json')

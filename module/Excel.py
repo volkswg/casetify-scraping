@@ -40,14 +40,21 @@ def editExcelfile(filename, product_list):
         sheet['C' + str(rowNumber)] = eProduct['description'] # product detail
         sheet['J' + str(rowNumber)] = prodIdx + 1 # product detail
         sheet['K' + str(rowNumber)] = "Type/Color" # reset
-        sheet['L' + str(rowNumber)] = opt['caseType'] # reset
+        sheet['L' + str(rowNumber)] = f"{opt['caseType']} {opt["caseColor"]}".strip() # reset
         sheet['M' + str(rowNumber)] = opt['imageSrc'] # reset
         sheet['N' + str(rowNumber)] = "Device" # reset
-        sheet['O' + str(rowNumber)] = deviceOpt # reset
-          
+        sheet['O' + str(rowNumber)] = deviceOpt['name'] # reset
+
         quantity = 10
-        if 'iP15' not in deviceOpt and 'MagSafe/Mirror' not in opt['caseType'] and len(opt['caseType'].strip().split(' ')) > 1:
-          quantity = 0
+
+        if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus', 'dvetc']:
+          caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
+          if caseTypeId in ['msclear'] and opt['caseColor'] == 'Pink':
+            quantity = 0
+          if caseTypeId in ['impact'] and opt["caseColor"] == 'Candy':
+            quantity = 0
+          if caseTypeId in ['msimpact'] and opt["caseColor"] == 'Candy' and deviceOpt['id'] not in ['dvip14pro', 'dvip14promax']:
+            quantity = 0
           
         sheet['P' + str(rowNumber)] = opt['price'] # price
         sheet['Q' + str(rowNumber)] = quantity # quantiry

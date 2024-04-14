@@ -1,29 +1,34 @@
 [
   {
+    "id": "msultrabounce",
     "displayText": "เคส Ultra Bounce รองรับ MagSafe",
     "optValue": "",
     "required": false,
     "colorList": []
   },
   {
+    "id": "msbounce",
     "displayText": "เคสกันกระแทก Bounce",
     "optValue": "",
     "required": false,
     "colorList": []
   },
   {
+    "id": "mspride",
     "displayText": "เคส MagSafe Pride",
     "optValue": "",
     "required": false,
     "colorList": []
   },
   {
+    "id": "msringstand",
     "displayText": "เคส Impact พร้อมห่วงตั้งรองรับ Magsafe",
     "optValue": "MagSafe/RingStand",
     "required": false,
     "colorList": []
   },
   {
+    "id": "msimpact",
     "displayText": "เคสกันกระแทกรองรับ Magsafe",
     "optValue": "MagSafe/Impact",
     "required": true,
@@ -34,6 +39,7 @@
     ]
   },
   {
+    "id": "msclear",
     "displayText": "เคสใสรองรับ Magsafe",
     "optValue": "MagSafe/Clear",
     "required": true,
@@ -43,9 +49,10 @@
     ]
   },
   {
+    "id": "msmirror",
     "displayText": "เคสกระจกรองรับ Magsafe",
     "optValue": "MagSafe/Mirror",
-    "required": true,
+    "required": false,
     "colorList": [
       { "displayText": "กรอบกระจกดำ", "optValue": "SB", "required": true  },
       { "displayText": "กระจกดำ-กรอบดำ", "optValue": "BB", "required": true  },
@@ -53,6 +60,7 @@
     ]
   },
   {
+    "id": "impact",
     "displayText": "เคสกันกระแทก",
     "optValue": "Impact",
     "required": true,
