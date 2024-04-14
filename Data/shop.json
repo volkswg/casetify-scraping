@@ -4,7 +4,9 @@
     "product": {
       "namePrefix": "[พร้อมส่ง] CASETiFY | ",
       "nameSuffix": "",
-      "description": "✅ จำหน่ายสินค้าแท้จาก Casetify Officials Store\n✅ มีประกันสินค้า 12 เดือน\n✅ ไม่ต้องเสียภาษีนำเข้าเอง\n✅ ได้สินค้าไวแน่นอน"
+      "description": "✅ จำหน่ายสินค้าแท้จาก Casetify Officials Store\n✅ มีประกันสินค้า 12 เดือน\n✅ ไม่ต้องเสียภาษีนำเข้าเอง\n✅ ได้สินค้าไวแน่นอน",
+      "optName1": "ชนิดเคส",
+      "optName2": "รุ่น"
     },
     "templateFile": "Data/CaseScape/shopee_simple_mass_upload_casecsape.xlsx"
   },
@@ -13,7 +15,9 @@
     "product": {
       "namePrefix": "[JARVI พร้อมส่ง] CASETiFY | ",
       "nameSuffix": "JARVI",
-      "description": "JARVI Test"
+      "description": "JARVI Test",
+      "optName1": "Type/Color",
+      "optName2": "Device"
     },
     "templateFile": "Data/JARVI/shopee_simple_mass_upload_Jarvi.xlsx"
 

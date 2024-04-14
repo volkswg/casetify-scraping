@@ -93,7 +93,8 @@ def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
           'title': productTitle,
           'description': 'description',
           'price': finalPrice,
-          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)} {colorInfo['optValue']}".strip(),
+          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)}",
+          'caseColor': f"{colorInfo['optValue']}",
           # 'deviceName': extactedDetail['deviceName'],
           # 'color': extactedDetail['color'],
           'imageSrc': srcUrl
