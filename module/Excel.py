@@ -47,7 +47,7 @@ def editExcelfile(filename, product_list):
 
         quantity = 10
         caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
-        if deviceOpt['id'] not in ['dvip15pro', 'dvip15promax']:
+        if deviceOpt['id'] not in ['dvip15pro', 'dvip15promax', 'dvetc']:
           if caseTypeId in ['msimpact'] and opt["caseColor"] == 'Blue':
             quantity = 0
 
