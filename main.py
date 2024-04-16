@@ -63,7 +63,6 @@ def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
   finalPrice = Math.calculateSellingPrice(price, is_preorder, IS_COLABS)
   
   # fetch color
-  Logger.logDebug("fetch color")
   colorItems = SB.findElements(driver, By.XPATH, '//ul[@class="items-container color"]//div[contains(@class, "item")]')
   
   productDetailList = []
@@ -95,19 +94,15 @@ def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
           'price': finalPrice,
           'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)}",
           'caseColor': f"{colorInfo['optValue']}",
-          # 'deviceName': extactedDetail['deviceName'],
-          # 'color': extactedDetail['color'],
           'imageSrc': srcUrl
         })
-      time.sleep(1)
   else:
     productDetailList.append({
       'title': productTitle,
       'description': 'description',
       'price': finalPrice,
       'caseType': Database.getCaseTypeOptName(case_type_display_txt),
-      # 'deviceName': extactedDetail['deviceName'],
-      # 'color': extactedDetail['color'],
+      'caseColor': f"{colorInfo['optValue']}",
       'imageSrc': srcUrl
     })
   
@@ -157,12 +152,10 @@ def getProductData(url, first_time_popup, is_preorder = False):
       isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
       if isRequiredCaseType == False:
         continue
-      time.sleep(1)
       detailList = getProductDetail(eBtn, caseTypeDisplayText, is_preorder)
       if detailList != False:
         prodOptList = prodOptList + detailList
     # transform product data
-    # Logger.logDebug(prodOptList)
     transformedProdOpts = Data.transformProdOpt(prodOptList, SHOP_NAME, is_preorder)
     transformedProdOpts['imageList'] = prodImgUrlList
     return transformedProdOpts
