@@ -34,6 +34,7 @@
     "required": true,
     "colorList": [
       { "displayText": "ดำ", "optValue": "", "required": true  },
+      { "displayText": "สีฟ้าคลาสสิก", "optValue": "Blue", "required": true  },
       { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
       { "displayText": "Matte Black", "optValue": "Mat", "required": true }
     ]
@@ -52,7 +53,7 @@
     "id": "msmirror",
     "displayText": "เคสกระจกรองรับ Magsafe",
     "optValue": "MagSafe/Mirror",
-    "required": false,
+    "required": true,
     "colorList": [
       { "displayText": "กรอบกระจกดำ", "optValue": "SB", "required": true  },
       { "displayText": "กระจกดำ-กรอบดำ", "optValue": "BB", "required": true  },
@@ -63,7 +64,7 @@
     "id": "impact",
     "displayText": "เคสกันกระแทก",
     "optValue": "Impact",
-    "required": true,
+    "required": false,
     "colorList": [
       { "displayText": "ดำ", "optValue": "", "required": true  },
       { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },

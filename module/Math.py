@@ -8,7 +8,6 @@ def calculateSellingPrice(price, preorder=False, colab=False):
   sellingPrice = price
   try:
     sellingPrice = Database.getSellingPrice(price, colab)
-    Logger.logDebug(f"final price: {sellingPrice}")
   except:
     multipyFactor = 1.15
     additionalValue = 0
