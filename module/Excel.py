@@ -46,9 +46,12 @@ def editExcelfile(filename, product_list):
         sheet['O' + str(rowNumber)] = deviceOpt['name'] # reset
 
         quantity = 10
+        caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
+        if deviceOpt['id'] not in ['dvip15pro', 'dvip15promax']:
+          if caseTypeId in ['msimpact'] and opt["caseColor"] == 'Blue':
+            quantity = 0
 
         if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus', 'dvetc']:
-          caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
           if caseTypeId in ['msclear'] and opt['caseColor'] == 'Pink':
             quantity = 0
           if caseTypeId in ['impact'] and opt["caseColor"] == 'Candy':
