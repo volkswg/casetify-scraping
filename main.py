@@ -119,6 +119,19 @@ def LoginFunction(username, password):
   driver.get('https://casetifycolab.page.link/doraemon')
   time.sleep(5)
 
+def clickCaseType(driver, element):
+  retryLimit = 5
+  retryCount = 0
+  while retryCount < retryLimit:
+    try:
+      Logger.logDebug(f"loop {retryCount}")
+      SB.scrollToElement(driver, element)
+      element.click()
+      return
+    except:
+      retryCount += 1
+  raise Exception("Error Retry Exceed")
+
 def getProductData(url, first_time_popup, is_preorder = False):
     driver.get(url)
     if first_time_popup == True:
@@ -147,6 +160,7 @@ def getProductData(url, first_time_popup, is_preorder = False):
       if caseTypeBtnListLen > 1:
         SB.scrollToElement(driver, eBtn)
         eBtn.click()
+        clickCaseType(driver, eBtn)
       [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
       caseTypeDisplayText = caseTypeDisplayTextElem.text
       isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
