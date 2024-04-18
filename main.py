@@ -124,7 +124,6 @@ def clickCaseType(driver, element):
   retryCount = 0
   while retryCount < retryLimit:
     try:
-      Logger.logDebug(f"loop {retryCount}")
       SB.scrollToElement(driver, element)
       element.click()
       return
