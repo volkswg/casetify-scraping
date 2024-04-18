@@ -102,7 +102,7 @@ def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
       'description': 'description',
       'price': finalPrice,
       'caseType': Database.getCaseTypeOptName(case_type_display_txt),
-      'caseColor': f"{colorInfo['optValue']}",
+      'caseColor': "",
       'imageSrc': srcUrl
     })
   
