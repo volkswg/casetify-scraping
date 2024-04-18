@@ -26,7 +26,6 @@ def editExcelfile(filename, product_list):
   sheet = xfile['แบบฟอร์มการลงสินค้า']
   
   deviceOptionList = Database.getDeviceList()
-  # deviceOptionList = ['iP15', 'iP15 Pro', 'iP15 ProMax', 'iP14', 'iP14 Pro', 'iP14 ProMax', 'iP13', 'iP13 Pro', 'iP13 ProMax', 'อื่นๆ ทักแชทเลย']
   
   templateStartRow = 7
   # loop through product list
@@ -47,17 +46,23 @@ def editExcelfile(filename, product_list):
 
         quantity = 10
         caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
-        if deviceOpt['id'] not in ['dvip15pro', 'dvip15promax', 'dvetc']:
-          if caseTypeId in ['msimpact'] and opt["caseColor"] == 'Blue':
-            quantity = 0
-
-        if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus', 'dvetc']:
-          if caseTypeId in ['msclear'] and opt['caseColor'] == 'Pink':
-            quantity = 0
-          if caseTypeId in ['impact'] and opt["caseColor"] == 'Candy':
-            quantity = 0
-          if caseTypeId in ['msimpact'] and opt["caseColor"] == 'Candy' and deviceOpt['id'] not in ['dvip14pro', 'dvip14promax']:
-            quantity = 0
+        match caseTypeId:
+          case 'msimpact':
+            match opt["caseColor"]:
+              case 'Blue':
+                if deviceOpt['id'] not in ['dvip15pro', 'dvip15promax', 'dvetc']:
+                  quantity = 0
+              case 'Candy':
+                if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus','dvip14pro', 'dvip14promax', 'dvetc']:
+                  quantity = 0
+          case 'msclear':
+            if opt['caseColor'] == 'Pink':
+              if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus', 'dvetc']:
+                quantity = 0
+          case 'impact':
+            if opt["caseColor"] == 'Candy':
+              if deviceOpt['id'] not in ['dvip15', 'dvip15pro', 'dvip15promax', 'dvip15plus', 'dvetc']:
+                quantity = 0
           
         sheet['P' + str(rowNumber)] = opt['price'] # price
         sheet['Q' + str(rowNumber)] = quantity # quantiry
