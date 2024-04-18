@@ -158,8 +158,6 @@ def getProductData(url, first_time_popup, is_preorder = False):
     caseTypeBtnListLen = caseTypeBtnList.__len__()
     for eBtn in caseTypeBtnList:
       if caseTypeBtnListLen > 1:
-        SB.scrollToElement(driver, eBtn)
-        eBtn.click()
         clickCaseType(driver, eBtn)
       [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
       caseTypeDisplayText = caseTypeDisplayTextElem.text
