@@ -1,4 +1,4 @@
-from module import Logger, Database
+from module import Logger, Database, GlobalVar
 
 import openpyxl
 
@@ -25,7 +25,7 @@ def editExcelfile(filename, product_list):
   xfile = openpyxl.load_workbook(filename)
   sheet = xfile['แบบฟอร์มการลงสินค้า']
   
-  deviceOptionList = Database.getDeviceList()
+  deviceOptionList = GlobalVar.databaseInstance.getDeviceList()
   
   templateStartRow = 7
   # loop through product list
@@ -45,7 +45,7 @@ def editExcelfile(filename, product_list):
         sheet['O' + str(rowNumber)] = deviceOpt['name'] # reset
 
         quantity = 10
-        caseTypeId = Database.getCaseTypeIdByOptName(opt["caseType"])
+        caseTypeId = GlobalVar.databaseInstance.getCaseTypeIdByOptName(opt["caseType"])
         match caseTypeId:
           case 'msimpact':
             match opt["caseColor"]:

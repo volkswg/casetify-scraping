@@ -1,67 +1,76 @@
 from module import File, Logger
 
-def getShopList():
-  shopDataList = File.readJSON('./Data/shop.json')
-  shopeNameList =  [e['shopName'] for e in shopDataList]
-  return shopeNameList
-
-def getTemplateFilenameByShopName(shop_name):
-  shopDataList = File.readJSON('./Data/shop.json')
-  shopData = next((eShop for eShop in shopDataList if eShop['shopName'] == shop_name), None)
-  return shopData['templateFile']
-
-def getProductPredefinedDetialByShopName(shop_name):
-  shopDataList = File.readJSON('./Data/shop.json')
-  shopData = next((eShop for eShop in shopDataList if eShop['shopName'] == shop_name), None)
-  return shopData['product']
-
-# case type 
-def getCaseTypeList():
-  return File.readJSON('./Data/caseType.json')
-
-def getCaseTypeIdByOptName(opt_name):
-  caseTypeList = getCaseTypeList()
-  [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['optValue'] == opt_name, caseTypeList))
-  return filteredCaseTypeInfo['id']
-
-def getCaseTypeByDisplayText(displayText):
-  caseTypeList = getCaseTypeList()
-  [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['displayText'] == displayText, caseTypeList))
-  return filteredCaseTypeInfo
-
-def isRequireCaseType(displayText):
-  caseTypeInfo = getCaseTypeByDisplayText(displayText)
-  return caseTypeInfo['required']
-
-def getCaseTypeOptName(displayText):
-  caseTypeInfo = getCaseTypeByDisplayText(displayText)
-  return caseTypeInfo['optValue']
-
-def isRequireColor(caseTypeDisplayText, colorDisplayText):
-  caseTypeInfo = getCaseTypeByDisplayText(caseTypeDisplayText)
-  caseColorList = caseTypeInfo['colorList']
-  filteredColorInfo = list(filter(lambda colorInfo: colorInfo['displayText'] == colorDisplayText, caseColorList))
-  if len(filteredColorInfo) < 1:
-    return False
-  return True
+class Database:
+  def __init__(self):
+    self.deviceBrand = "Apple" # default
+    self.deviceBrandLowerCase = "apple" # default
+    self.caseTypeData = File.readJSON('./Data/caseType.json')
+    self.shopListData = File.readJSON('./Data/shop.json')
+    self.deviceList = File.readJSON('./Data/deviceList.json')
+    self.priceMapper = File.readJSON('./Data/priceMapper.json')
+    
+  def __getCaseTypeList(self):
+    return self.caseTypeData[self.deviceBrandLowerCase]
   
-def getColorInfo(caseTypeDisplayText, colorDisplayText):
-  caseTypeInfo = getCaseTypeByDisplayText(caseTypeDisplayText)
-  caseColorList = caseTypeInfo['colorList']
-  filteredColorInfo = list(filter(lambda colorInfo: colorInfo['displayText'] == colorDisplayText, caseColorList))
-  if len(filteredColorInfo) < 1:
-    return False
-  return filteredColorInfo[0]
+  def __getCaseTypeByDisplayText(self, displayText):
+    caseTypeList = self.__getCaseTypeList()
+    [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['displayText'] == displayText, caseTypeList))
+    return filteredCaseTypeInfo
+  
+  def setDeviceBrand(self, deviceBrand):
+    self.deviceBrand = deviceBrand
+    self.deviceBrandLowerCase = deviceBrand.lower()
+  
+  def isRequireCaseType(self, displayText):
+    caseTypeInfo = self.__getCaseTypeByDisplayText(displayText)
+    return caseTypeInfo['required']
+    
+  def getCaseTypeOptName(self, displayText):
+    caseTypeInfo = self.__getCaseTypeByDisplayText(displayText)
+    return caseTypeInfo['optValue']
+  
+  # def isRequireColor(self, caseTypeDisplayText, colorDisplayText):
+  #   caseTypeInfo = self.__getCaseTypeByDisplayText(caseTypeDisplayText)
+  #   caseColorList = caseTypeInfo['colorList']
+  #   filteredColorInfo = list(filter(lambda colorInfo: colorInfo['displayText'] == colorDisplayText, caseColorList))
+  #   if len(filteredColorInfo) < 1:
+  #     return False
+  #   return True
+  
+  def getColorInfo(self, caseTypeDisplayText, colorDisplayText):
+    caseTypeInfo = self.__getCaseTypeByDisplayText(caseTypeDisplayText)
+    caseColorList = caseTypeInfo['colorList']
+    filteredColorInfo = list(filter(lambda colorInfo: colorInfo['displayText'] == colorDisplayText, caseColorList))
+    if len(filteredColorInfo) < 1:
+      return False
+    return filteredColorInfo[0]
+  
+  def getCaseTypeIdByOptName(self, opt_name):
+    caseTypeList = self.__getCaseTypeList()
+    [filteredCaseTypeInfo] = list(filter(lambda caseTypeInfo: caseTypeInfo['optValue'] == opt_name, caseTypeList))
+    return filteredCaseTypeInfo['id']
+  
+  # ============= shop list ==============
+  def getShopList(self):
+    return [e['shopName'] for e in  self.shopListData]
+  
+  def getTemplateFilenameByShopName(self, shop_name):
+    shopData = next((eShop for eShop in self.shopListData if eShop['shopName'] == shop_name), None)
+    return shopData['templateFile']
 
-# device list 
-def getDeviceList():
-  deviceList = File.readJSON('./Data/deviceList.json')
-  deviceList.sort(key=lambda x: x['order'])
-  return deviceList
-
-def getSellingPrice(ogPrice, isColab):
-  priceMapper = File.readJSON('./Data/priceMapper.json')
-  queryText = 'normal'
-  if isColab == True:
-    queryText = 'colab'
-  return priceMapper[queryText][f"{ogPrice}"]
+  def getProductPredefinedDetialByShopName(self, shop_name):
+    shopData = next((eShop for eShop in self.shopListData if eShop['shopName'] == shop_name), None)
+    return shopData['product']
+  
+  # ============= device list ==============
+  def getDeviceList(self):
+    newDeviceList = self.deviceList
+    newDeviceList.sort(key=lambda x: x['order'])
+    return newDeviceList
+  
+  # ============= price mapper ==============
+  def getSellingPrice(self, ogPrice, isColab):
+    queryText = 'normal'
+    if isColab == True:
+      queryText = 'colab'
+    return self.priceMapper[queryText][f"{ogPrice}"]

@@ -1,11 +1,25 @@
-from module import Logger, String, Data, Database, Math, SeleniumBootstrap as SB
+from module import Logger, String, Data, Math, SeleniumBootstrap as SB, GlobalVar
 from selenium.webdriver.common.by import By
+import time
 
 def getProductTitle(driver):
   titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
   productTitle = titleElem[0].get_attribute('innerHTML')
   return productTitle
 
+def selectDeviceBrand(driver, brand = 'Apple'):
+    # waiting for device dropdown rendered
+  SB.findElements(driver,By.XPATH, '//div[contains(@class, "device-resolver-drop-down-container")]')
+  deviceBrandSelectorElem = SB.findElements(driver, By.XPATH, '//div[contains(@class, "brand-drop-down-container")]', is_waiting=False)
+  if deviceBrandSelectorElem.__len__() < 1:
+    Logger.logWarn('This product only has 1 brand')
+  else:
+    # select device brand
+    deviceBrandSelectorElem = deviceBrandSelectorElem[0]
+    deviceBrandSelectorElem.click()
+    
+    [optionElem] = SB.findElements(driver, By.XPATH, f"//div[contains(@class, \"brand-drop-down-container\")]//option[text()[contains(., \"{brand}\")]]")
+    optionElem.click()
 
 def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt, is_colabs, is_preorder = False):
   # check item is not available
@@ -43,7 +57,7 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
         eColorBtn.click()
         
       colorDidplayTextElem = driver.find_element(By.XPATH, '//div[@data-label="selected-color-name"]')
-      colorInfo = Database.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
+      colorInfo = GlobalVar.databaseInstance.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
       # Logger.logDebug(colorInfo != False)
       if colorInfo != False:
         
@@ -62,7 +76,7 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
           'title': productTitle,
           'description': 'description',
           'price': finalPrice,
-          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)}",
+          'caseType': f"{GlobalVar.databaseInstance.getCaseTypeOptName(case_type_display_txt)}",
           'caseColor': f"{colorInfo['optValue']}",
           'imageSrc': srcUrl
         })
@@ -71,7 +85,7 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
       'title': productTitle,
       'description': 'description',
       'price': finalPrice,
-      'caseType': Database.getCaseTypeOptName(case_type_display_txt),
+      'caseType': GlobalVar.databaseInstance.getCaseTypeOptName(case_type_display_txt),
       'caseColor': "",
       'imageSrc': srcUrl
     })
@@ -90,16 +104,14 @@ def clickCaseType(driver, element):
       retryCount += 1
   raise Exception("Error Retry Exceed")
 
-
-def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, device = 'apple'):
+def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, brand = 'Samsung'):
   driver.get(url)
   
-  # Logger.logDebug(device)
-  productSelectorElem = SB.findElements(driver, By.XPATH, '//div[contains(@class, "brand-drop-down-container")]', is_waiting=False)
-  # Logger.logDebug(productSelectorElem)
-  
   productTitle = getProductTitle(driver)
-  Logger.logDebug(f'Start Fetching "{productTitle}"')
+  Logger.logDebug(f'[Start] Fetching "{productTitle}"')
+  
+  # waiting for device dropdown rendered
+  selectDeviceBrand(driver, brand)
   
   productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
   imageContanerLen = productImageContainer.__len__()
@@ -108,13 +120,13 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
     Logger.logError('Something Error on fetch image')
     print(productImageContainer)
 
-  print('[Start] Download image main product image')
+  # print('[Start] Download image main product image')
   prodImgUrlList = []
   for imageElem in productImageContainer:
     srcUrl = imageElem.get_attribute('src')
     srcUrl = String.removeExtraFileExt(srcUrl)
     prodImgUrlList.append(srcUrl)
-  print('[End] Download Cover image')
+  # print('[End] Download Cover image')
   
   # get all product option
   caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
@@ -125,17 +137,15 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
       clickCaseType(driver, eBtn)
     [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
     caseTypeDisplayText = caseTypeDisplayTextElem.text
-    # print(caseTypeDisplayText)
-    isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
+    isRequiredCaseType = GlobalVar.databaseInstance.isRequireCaseType(caseTypeDisplayText)
     if isRequiredCaseType == False:
       continue
     detailList = getProductDetail(driver, productTitle, eBtn, caseTypeDisplayText, is_colabs, is_preorder)
     if detailList != False:
       prodOptList = prodOptList + detailList
   # transform product data
-  # Logger.logDebug('prodOptList')
-  # Logger.logDebug(prodOptList)
   transformedProdOpts = Data.transformProdOpt(prodOptList, shope_name, is_preorder)
   transformedProdOpts['imageList'] = prodImgUrlList
+  Logger.logSuccess(f'[Finish] Fetching "{productTitle}"')
   return transformedProdOpts
   

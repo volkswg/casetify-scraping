@@ -1,5 +1,5 @@
 import math
-from module import Logger, Database
+from module import Logger, GlobalVar
 
 def roundUpHundred(x):
   return int(math.ceil(x / 100.0)) * 100  
@@ -7,7 +7,7 @@ def roundUpHundred(x):
 def calculateSellingPrice(price, preorder=False, colab=False):
   sellingPrice = price
   try:
-    sellingPrice = Database.getSellingPrice(price, colab)
+    sellingPrice = GlobalVar.databaseInstance.getSellingPrice(price, colab)
   except:
     multipyFactor = 1.15
     additionalValue = 0

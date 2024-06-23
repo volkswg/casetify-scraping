@@ -1,8 +1,8 @@
 import os, os.path
-from module import File, Logger, String, Database
+from module import File, Logger, String, GlobalVar
 
 def generateNewSimpleMassUploadFile(shop_name):
-  templateFilePath = Database.getTemplateFilenameByShopName(shop_name)
+  templateFilePath = GlobalVar.databaseInstance.getTemplateFilenameByShopName(shop_name)
   templateFileName = templateFilePath.split('/')[-1]
   DIR = 'Mass_Upload_File'
   fileCount = len([filename for filename in os.listdir(DIR) if filename.endswith('.xlsx')])

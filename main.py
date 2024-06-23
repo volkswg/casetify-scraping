@@ -4,7 +4,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.mouse_button import MouseButton
 from selenium.webdriver.common.keys import Keys
 
-from module import Logger, File, Excel, ShopeeTemplate, ScrapModule, Database, SeleniumBootstrap as SB
+from module import Logger, File, Excel, ShopeeTemplate, ScrapModule, Database, SeleniumBootstrap as SB, GlobalVar
 
 import time
 import inquirer
@@ -13,6 +13,7 @@ PRODUCT_LINK_FILENAME = "productUrlList.txt"
 IS_COLABS = False
 NEED_LOGIN = False
 SHOP_NAME = ''
+DEVICE_BRAND = 'Apple'
 
 def clickCurrentLocation():
   action = ActionBuilder(driver)
@@ -50,20 +51,24 @@ def LoginFunction(username, password):
 if __name__ == "__main__":
   productList = []
   prodUrlList = File.readFile(PRODUCT_LINK_FILENAME)
+  # init database and store to global var
+  GlobalVar.databaseInstance = Database.Database()
 
   questions = [
     inquirer.List('shopName',
       message="Which Shop do you want?",
-      choices=Database.getShopList(),
+      choices=GlobalVar.databaseInstance.getShopList(),
     ),
     inquirer.Confirm("isColab", message="Is This Co-Labs?", default=True),
-    inquirer.Confirm('needLogin', message="Is this session need login?", default=False)
+    inquirer.Confirm('needLogin', message="Is this session need login?", default=False),
+    inquirer.List('deviceBrand', message="Which Brand Do you want?", choices=["Apple", "Samsung"])
   ]
   answers = inquirer.prompt(questions)
   
   SHOP_NAME = answers["shopName"]
   IS_COLABS = answers['isColab']
   NEED_LOGIN = answers['needLogin']
+  DEVICE_BRAND = answers['deviceBrand']
   driver = webdriver.Chrome()
   
   if NEED_LOGIN == True:
@@ -72,10 +77,11 @@ if __name__ == "__main__":
   driver.get("https://www.casetify.com/")
   acceptCookies()
   closeSignUpIframe()
+  
+  GlobalVar.databaseInstance.setDeviceBrand(DEVICE_BRAND)
 
   for idx, e_link_path in enumerate(prodUrlList):
-    productDetail = ScrapModule.getCaseDataFromUrl(driver,e_link_path, SHOP_NAME, IS_COLABS, 'apple')
-    Logger.logDebug(productDetail)
+    productDetail = ScrapModule.getCaseDataFromUrl(driver,e_link_path, SHOP_NAME, IS_COLABS, brand=DEVICE_BRAND)
     productList.append(productDetail)
   
   newMassUploadFile = ShopeeTemplate.generateNewSimpleMassUploadFile(SHOP_NAME)

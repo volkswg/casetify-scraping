@@ -1,74 +1,124 @@
-[
-  {
-    "id": "msultrabounce",
-    "displayText": "เคส Ultra Bounce รองรับ MagSafe",
-    "optValue": "",
-    "required": false,
-    "colorList": []
-  },
-  {
-    "id": "msbounce",
-    "displayText": "เคสกันกระแทก Bounce",
-    "optValue": "",
-    "required": false,
-    "colorList": []
-  },
-  {
-    "id": "mspride",
-    "displayText": "เคส MagSafe Pride",
-    "optValue": "",
-    "required": false,
-    "colorList": []
-  },
-  {
-    "id": "msringstand",
-    "displayText": "เคส Impact พร้อมห่วงตั้งรองรับ Magsafe",
-    "optValue": "MagSafe/RingStand",
-    "required": false,
-    "colorList": []
-  },
-  {
-    "id": "msimpact",
-    "displayText": "เคสกันกระแทกรองรับ Magsafe",
-    "optValue": "MagSafe/Impact",
-    "required": true,
-    "colorList": [
-      { "displayText": "ดำ", "optValue": "", "required": true  },
-      { "displayText": "สีฟ้าคลาสสิก", "optValue": "Blue", "required": true  },
-      { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
-      { "displayText": "Matte Black", "optValue": "Mat", "required": true }
-    ]
-  },
-  {
-    "id": "msclear",
-    "displayText": "เคสใสรองรับ Magsafe",
-    "optValue": "MagSafe/Clear",
-    "required": true,
-    "colorList": [
-      { "displayText": "ใส", "optValue": "", "required": true  },
-      { "displayText": "สี Pink Ombre", "optValue": "Pink", "required": true  }
-    ]
-  },
-  {
-    "id": "msmirror",
-    "displayText": "เคสกระจกรองรับ Magsafe",
-    "optValue": "MagSafe/Mirror",
-    "required": true,
-    "colorList": [
-      { "displayText": "กรอบกระจกดำ", "optValue": "SB", "required": true  },
-      { "displayText": "กระจกดำ-กรอบดำ", "optValue": "BB", "required": true  },
-      { "displayText": "กรอบกระจกเงิน", "optValue": "SS", "required": true  }
-    ]
-  },
-  {
-    "id": "impact",
-    "displayText": "เคสกันกระแทก",
-    "optValue": "Impact",
-    "required": false,
-    "colorList": [
-      { "displayText": "ดำ", "optValue": "", "required": true  },
-      { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
-      { "displayText": "Matte Black", "optValue": "Mat", "required": true }
-    ]
-  }
-]
+{
+  "apple":[
+    {
+      "id": "msultrabounce",
+      "displayText": "เคส Ultra Bounce รองรับ MagSafe",
+      "optValue": "",
+      "required": false,
+      "colorList": []
+    },
+    {
+      "id": "msbounce",
+      "displayText": "เคสกันกระแทก Bounce",
+      "optValue": "",
+      "required": false,
+      "colorList": []
+    },
+    {
+      "id": "mspride",
+      "displayText": "เคส MagSafe Pride",
+      "optValue": "",
+      "required": false,
+      "colorList": []
+    },
+    {
+      "id": "msringstand",
+      "displayText": "เคส Impact พร้อมห่วงตั้งรองรับ Magsafe",
+      "optValue": "MagSafe/RingStand",
+      "required": false,
+      "colorList": []
+    },
+    {
+      "id": "msimpact",
+      "displayText": "เคสกันกระแทกรองรับ Magsafe",
+      "optValue": "MagSafe/Impact",
+      "required": true,
+      "colorList": [
+        { "displayText": "ดำ", "optValue": "", "required": true  },
+        { "displayText": "สีฟ้าคลาสสิก", "optValue": "Blue", "required": true  },
+        { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
+        { "displayText": "Matte Black", "optValue": "Mat", "required": true }
+      ]
+    },
+    {
+      "id": "msclear",
+      "displayText": "เคสใสรองรับ Magsafe",
+      "optValue": "MagSafe/Clear",
+      "required": true,
+      "colorList": [
+        { "displayText": "ใส", "optValue": "", "required": true  },
+        { "displayText": "สี Pink Ombre", "optValue": "Pink", "required": true  }
+      ]
+    },
+    {
+      "id": "msmirror",
+      "displayText": "เคสกระจกรองรับ Magsafe",
+      "optValue": "MagSafe/Mirror",
+      "required": true,
+      "colorList": [
+        { "displayText": "กรอบกระจกดำ", "optValue": "SB", "required": true  },
+        { "displayText": "กระจกดำ-กรอบดำ", "optValue": "BB", "required": true  },
+        { "displayText": "กรอบกระจกเงิน", "optValue": "SS", "required": true  }
+      ]
+    },
+    {
+      "id": "msmirrorstand",
+      "displayText": "เคสกระจกพร้อมห่วงขาตั้งรองรับ Magsafe",
+      "optValue": "MagSafe/Mirror Ring",
+      "required": false,
+      "colorList": []
+    },
+    {
+      "id": "impact",
+      "displayText": "เคสกันกระแทก",
+      "optValue": "Impact",
+      "required": false,
+      "colorList": [
+        { "displayText": "ดำ", "optValue": "", "required": true  },
+        { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
+        { "displayText": "Matte Black", "optValue": "Mat", "required": true }
+      ]
+    }
+  ],
+  "samsung":[
+    {
+      "id": "impactringstand",
+      "displayText": "เคส Impact Ring Stand",
+      "optValue": "RingStand",
+      "required": false,
+      "colorList": [
+        { "displayText": "ดำ", "optValue": "", "required": true  }
+      ]
+    },
+    {
+      "id": "impact",
+      "displayText": "เคสกันกระแทก",
+      "optValue": "Impact",
+      "required": true,
+      "colorList": [
+        { "displayText": "ดำ", "optValue": "", "required": true  },
+        { "displayText": "Deep Purple", "optValue": "Purple", "required": true },
+        { "displayText": "Matte Black", "optValue": "Mat", "required": true }
+      ]
+    },
+    {
+      "id": "clear",
+      "displayText": "Clear Case",
+      "optValue": "Clear",
+      "required": true,
+      "colorList": [
+        { "displayText": "ใส", "optValue": "", "required": true  }
+      ]
+    },
+    {
+      "id": "mirror",
+      "displayText": "Mirror Case",
+      "optValue": "Mirror",
+      "required": true,
+      "colorList": [
+        { "displayText": "กรอบกระจกดำ", "optValue": "SB", "required": true  }
+      ]
+    }
+  ]
+}
+
