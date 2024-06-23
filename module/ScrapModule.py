@@ -1,0 +1,141 @@
+from module import Logger, String, Data, Database, Math, SeleniumBootstrap as SB
+from selenium.webdriver.common.by import By
+
+def getProductTitle(driver):
+  titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
+  productTitle = titleElem[0].get_attribute('innerHTML')
+  return productTitle
+
+
+def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt, is_colabs, is_preorder = False):
+  # check item is not available
+  waitListContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "waitlist-form-container")]')
+  isWaitingList = waitListContainer.__len__() > 0
+  if isWaitingList == True:
+    return False
+  # download case type image
+  productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+  imageContanerLen = productImageContainer.__len__()
+  
+  if imageContanerLen < 1 :
+    Logger.logError('Something Error on fetch option image')
+    
+  srcUrl = productImageContainer[0].get_attribute('src')
+  srcUrl = String.removeExtraFileExt(srcUrl)
+  
+  # addToCartBtn = driver.find_elements(By.XPATH, '//div[@id="PRODUCT_ACTION"]/div[contains(@class, "product-action-btn-container")]/button[contains(@class, "shopping-cart-button")]')
+  
+  # fetch product title here
+  productTitle = product_title
+  
+  priceElem = case_type_btn.find_element(By.XPATH, './/div[@data-label="case-type-item-price"]')
+  price = String.convertPriceToInt(priceElem.text)
+  finalPrice = Math.calculateSellingPrice(price, is_preorder, is_colabs)
+  
+  # fetch color
+  colorItems = SB.findElements(driver, By.XPATH, '//ul[@class="items-container color"]//div[contains(@class, "item")]')
+  
+  productDetailList = []
+  if len(colorItems) > 1:
+    for eColorBtn in colorItems:
+      SB.scrollToElement(driver, eColorBtn)
+      if 'active' not in eColorBtn.get_attribute('class'):
+        eColorBtn.click()
+        
+      colorDidplayTextElem = driver.find_element(By.XPATH, '//div[@data-label="selected-color-name"]')
+      colorInfo = Database.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
+      # Logger.logDebug(colorInfo != False)
+      if colorInfo != False:
+        
+        # fetch image =====
+        productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+        imageContanerLen = productImageContainer.__len__()
+        
+        if imageContanerLen < 1 :
+          Logger.logError('Something Error on fetch option image')
+          
+        srcUrl = productImageContainer[0].get_attribute('src')
+        srcUrl = String.removeExtraFileExt(srcUrl)
+        # fetch image =====
+        # Logger.logDebug(colorInfo['optValue'])
+        productDetailList.append({
+          'title': productTitle,
+          'description': 'description',
+          'price': finalPrice,
+          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)}",
+          'caseColor': f"{colorInfo['optValue']}",
+          'imageSrc': srcUrl
+        })
+  else:
+    productDetailList.append({
+      'title': productTitle,
+      'description': 'description',
+      'price': finalPrice,
+      'caseType': Database.getCaseTypeOptName(case_type_display_txt),
+      'caseColor': "",
+      'imageSrc': srcUrl
+    })
+  
+  return productDetailList
+
+def clickCaseType(driver, element):
+  retryLimit = 5
+  retryCount = 0
+  while retryCount < retryLimit:
+    try:
+      SB.scrollToElement(driver, element)
+      element.click()
+      return
+    except:
+      retryCount += 1
+  raise Exception("Error Retry Exceed")
+
+
+def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, device = 'apple'):
+  driver.get(url)
+  
+  # Logger.logDebug(device)
+  productSelectorElem = SB.findElements(driver, By.XPATH, '//div[contains(@class, "brand-drop-down-container")]', is_waiting=False)
+  # Logger.logDebug(productSelectorElem)
+  
+  productTitle = getProductTitle(driver)
+  Logger.logDebug(f'Start Fetching "{productTitle}"')
+  
+  productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+  imageContanerLen = productImageContainer.__len__()
+  
+  if imageContanerLen < 1 :
+    Logger.logError('Something Error on fetch image')
+    print(productImageContainer)
+
+  print('[Start] Download image main product image')
+  prodImgUrlList = []
+  for imageElem in productImageContainer:
+    srcUrl = imageElem.get_attribute('src')
+    srcUrl = String.removeExtraFileExt(srcUrl)
+    prodImgUrlList.append(srcUrl)
+  print('[End] Download Cover image')
+  
+  # get all product option
+  caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
+  prodOptList = []
+  caseTypeBtnListLen = caseTypeBtnList.__len__()
+  for eBtn in caseTypeBtnList:
+    if caseTypeBtnListLen > 1:
+      clickCaseType(driver, eBtn)
+    [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
+    caseTypeDisplayText = caseTypeDisplayTextElem.text
+    # print(caseTypeDisplayText)
+    isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
+    if isRequiredCaseType == False:
+      continue
+    detailList = getProductDetail(driver, productTitle, eBtn, caseTypeDisplayText, is_colabs, is_preorder)
+    if detailList != False:
+      prodOptList = prodOptList + detailList
+  # transform product data
+  # Logger.logDebug('prodOptList')
+  # Logger.logDebug(prodOptList)
+  transformedProdOpts = Data.transformProdOpt(prodOptList, shope_name, is_preorder)
+  transformedProdOpts['imageList'] = prodImgUrlList
+  return transformedProdOpts
+  

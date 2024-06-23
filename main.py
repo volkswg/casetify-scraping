@@ -4,7 +4,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.mouse_button import MouseButton
 from selenium.webdriver.common.keys import Keys
 
-from module import Logger, String, Math, File, Excel, ShopeeTemplate, Data, Database, SeleniumBootstrap as SB
+from module import Logger, File, Excel, ShopeeTemplate, ScrapModule, Database, SeleniumBootstrap as SB
 
 import time
 import inquirer
@@ -36,78 +36,6 @@ def closeSignUpIframe():
   driver.switch_to.default_content()
   Logger.logSuccess('Closed Sign Up Popup')
 
-def getProductDetail(case_type_btn, case_type_display_txt, is_preorder = False):
-  Logger.logDebug('Get Product detail')
-  # check item is not available
-  waitListContainer = driver.find_elements(By.XPATH, '//div[contains(@class, "waitlist-form-container")]')
-  isWaitingList = waitListContainer.__len__() > 0
-  if isWaitingList == True:
-    return False
-  # download case type image
-  productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
-  imageContanerLen = productImageContainer.__len__()
-  
-  if imageContanerLen < 1 :
-    Logger.logError('Something Error on fetch option image')
-    
-  srcUrl = productImageContainer[0].get_attribute('src')
-  srcUrl = String.removeExtraFileExt(srcUrl)
-  
-  # addToCartBtn = driver.find_elements(By.XPATH, '//div[@id="PRODUCT_ACTION"]/div[contains(@class, "product-action-btn-container")]/button[contains(@class, "shopping-cart-button")]')
-  # fetch product title here
-  titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
-  productTitle = titleElem[0].get_attribute('innerHTML')
-  
-  priceElem = case_type_btn.find_element(By.XPATH, './/div[@data-label="case-type-item-price"]')
-  price = String.convertPriceToInt(priceElem.text)
-  finalPrice = Math.calculateSellingPrice(price, is_preorder, IS_COLABS)
-  
-  # fetch color
-  colorItems = SB.findElements(driver, By.XPATH, '//ul[@class="items-container color"]//div[contains(@class, "item")]')
-  
-  productDetailList = []
-  if len(colorItems) > 1:
-    for eColorBtn in colorItems:
-      SB.scrollToElement(driver, eColorBtn)
-      if 'active' not in eColorBtn.get_attribute('class'):
-        eColorBtn.click()
-        
-      colorDidplayTextElem = driver.find_element(By.XPATH, '//div[@data-label="selected-color-name"]')
-      colorInfo = Database.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
-      # Logger.logDebug(colorInfo != False)
-      if colorInfo != False:
-        
-        # fetch image =====
-        productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
-        imageContanerLen = productImageContainer.__len__()
-        
-        if imageContanerLen < 1 :
-          Logger.logError('Something Error on fetch option image')
-          
-        srcUrl = productImageContainer[0].get_attribute('src')
-        srcUrl = String.removeExtraFileExt(srcUrl)
-        # fetch image =====
-        # Logger.logDebug(colorInfo['optValue'])
-        productDetailList.append({
-          'title': productTitle,
-          'description': 'description',
-          'price': finalPrice,
-          'caseType': f"{Database.getCaseTypeOptName(case_type_display_txt)}",
-          'caseColor': f"{colorInfo['optValue']}",
-          'imageSrc': srcUrl
-        })
-  else:
-    productDetailList.append({
-      'title': productTitle,
-      'description': 'description',
-      'price': finalPrice,
-      'caseType': Database.getCaseTypeOptName(case_type_display_txt),
-      'caseColor': "",
-      'imageSrc': srcUrl
-    })
-  
-  return productDetailList
-  
 def LoginFunction(username, password):
   driver.get('https://www.casetify.com/sign_up_page')
   signInBtn = SB.findElements(driver, By.XPATH,'//a[contains(@class, "action-link")]')
@@ -118,58 +46,6 @@ def LoginFunction(username, password):
   time.sleep(10)
   driver.get('https://casetifycolab.page.link/doraemon')
   time.sleep(5)
-
-def clickCaseType(driver, element):
-  retryLimit = 5
-  retryCount = 0
-  while retryCount < retryLimit:
-    try:
-      SB.scrollToElement(driver, element)
-      element.click()
-      return
-    except:
-      retryCount += 1
-  raise Exception("Error Retry Exceed")
-
-def getProductData(url, first_time_popup, is_preorder = False):
-    driver.get(url)
-    if first_time_popup == True:
-      acceptCookies()
-      closeSignUpIframe()
-    productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
-    imageContanerLen = productImageContainer.__len__()
-    
-    if imageContanerLen < 1 :
-      Logger.logError('Something Error on fetch image')
-      print(productImageContainer)
-
-    print('[Start] Download image main product image')
-    prodImgUrlList = []
-    for imageElem in productImageContainer:
-      srcUrl = imageElem.get_attribute('src')
-      srcUrl = String.removeExtraFileExt(srcUrl)
-      prodImgUrlList.append(srcUrl)
-    print('[End] Download Cover image')
-    
-    # get all product option
-    caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
-    prodOptList = []
-    caseTypeBtnListLen = caseTypeBtnList.__len__()
-    for eBtn in caseTypeBtnList:
-      if caseTypeBtnListLen > 1:
-        clickCaseType(driver, eBtn)
-      [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
-      caseTypeDisplayText = caseTypeDisplayTextElem.text
-      isRequiredCaseType = Database.isRequireCaseType(caseTypeDisplayText)
-      if isRequiredCaseType == False:
-        continue
-      detailList = getProductDetail(eBtn, caseTypeDisplayText, is_preorder)
-      if detailList != False:
-        prodOptList = prodOptList + detailList
-    # transform product data
-    transformedProdOpts = Data.transformProdOpt(prodOptList, SHOP_NAME, is_preorder)
-    transformedProdOpts['imageList'] = prodImgUrlList
-    return transformedProdOpts
 
 if __name__ == "__main__":
   productList = []
@@ -193,8 +69,13 @@ if __name__ == "__main__":
   if NEED_LOGIN == True:
     LoginFunction('passakorn.s@icloud.com','Passakorn2')
 
+  driver.get("https://www.casetify.com/")
+  acceptCookies()
+  closeSignUpIframe()
+
   for idx, e_link_path in enumerate(prodUrlList):
-    productDetail = getProductData(e_link_path, idx == 0)
+    productDetail = ScrapModule.getCaseDataFromUrl(driver,e_link_path, SHOP_NAME, IS_COLABS, 'apple')
+    Logger.logDebug(productDetail)
     productList.append(productDetail)
   
   newMassUploadFile = ShopeeTemplate.generateNewSimpleMassUploadFile(SHOP_NAME)

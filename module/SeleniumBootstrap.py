@@ -5,8 +5,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 def waitUntilVisible(driver, locator):
   WebDriverWait(driver, 10).until(EC.visibility_of_element_located(locator))
   
-def findElements(driver, selector_type, selector_value):
-  waitUntilVisible(driver ,(selector_type, selector_value))
+def findElements(driver, selector_type, selector_value, is_waiting = True):
+  if is_waiting == True:
+    waitUntilVisible(driver ,(selector_type, selector_value))
   return driver.find_elements(selector_type, selector_value)
 
 def scrollToElement(driver, element):
