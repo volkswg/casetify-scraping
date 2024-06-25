@@ -64,7 +64,7 @@ class Database:
   
   # ============= device list ==============
   def getDeviceList(self):
-    newDeviceList = self.deviceList
+    newDeviceList = self.deviceList[self.deviceBrandLowerCase]
     newDeviceList.sort(key=lambda x: x['order'])
     return newDeviceList
   
