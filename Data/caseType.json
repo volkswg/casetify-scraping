@@ -86,7 +86,7 @@
       "id": "magimpact",
       "displayText": "เคสกันกระแทกมีแม่เหล็ก",
       "optValue": "Mag/Impact",
-      "required": false, 
+      "required": true, 
       "colorList": [
         { "displayText": "ดำ", "optValue": "", "required": true  }
       ]
