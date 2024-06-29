@@ -118,7 +118,6 @@ def getCaseTypeDisplayText(driver):
   return caseTypeDisplayTextElem.text
 
 def getCoverImage(driver): 
-  Logger.logDebug('getCoverImage called')
   productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
   imageContanerLen = productImageContainer.__len__()
 
