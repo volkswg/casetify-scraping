@@ -108,6 +108,24 @@ def getCaseTypeDisplayText(driver):
   [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
   return caseTypeDisplayTextElem.text
 
+def getCoverImage(driver): 
+  Logger.logDebug('getCoverImage called')
+  productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+  imageContanerLen = productImageContainer.__len__()
+
+  if imageContanerLen < 1 :
+      Logger.logError('Something Error on fetch image')
+      print(productImageContainer)
+      return []
+      
+  prodCoverImgUrlList = []
+  for imageElem in productImageContainer:
+    srcUrl = imageElem.get_attribute('src')
+    srcUrl = String.removeExtraFileExt(srcUrl)
+    prodCoverImgUrlList.append(srcUrl)
+  # Logger.logDebug(prodCoverImgUrlList)
+  return prodCoverImgUrlList
+    
 def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, brand = 'Samsung'):
   driver.get(url)
   
@@ -116,21 +134,7 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
   
   # waiting for device dropdown rendered
   selectDeviceBrand(driver, brand)
-  
-  productImageContainer = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
-  imageContanerLen = productImageContainer.__len__()
-  
-  if imageContanerLen < 1 :
-    Logger.logError('Something Error on fetch image')
-    print(productImageContainer)
-
-  # print('[Start] Download image main product image')
-  prodImgUrlList = []
-  for imageElem in productImageContainer:
-    srcUrl = imageElem.get_attribute('src')
-    srcUrl = String.removeExtraFileExt(srcUrl)
-    prodImgUrlList.append(srcUrl)
-  # print('[End] Download Cover image')
+  prodImgUrlList = getCoverImage(driver)
   
   # get all product option
   caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
