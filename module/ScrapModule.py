@@ -104,6 +104,10 @@ def clickCaseType(driver, element):
       retryCount += 1
   raise Exception("Error Retry Exceed")
 
+def getCaseTypeDisplayText(driver):
+  [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
+  return caseTypeDisplayTextElem.text
+
 def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, brand = 'Samsung'):
   driver.get(url)
   
@@ -135,8 +139,7 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
   for eBtn in caseTypeBtnList:
     if caseTypeBtnListLen > 1:
       clickCaseType(driver, eBtn)
-    [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
-    caseTypeDisplayText = caseTypeDisplayTextElem.text
+    caseTypeDisplayText = getCaseTypeDisplayText(driver)
     isRequiredCaseType = GlobalVar.databaseInstance.isRequireCaseType(caseTypeDisplayText)
     if isRequiredCaseType == False:
       continue
