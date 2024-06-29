@@ -9,6 +9,9 @@ class Database:
     self.deviceList = File.readJSON('./Data/deviceList.json')
     self.priceMapper = File.readJSON('./Data/priceMapper.json')
     
+  def __handleCaseTypeNotFound(self):
+    Logger.logError("Case type not found")
+    
   def __getCaseTypeList(self):
     return self.caseTypeData[self.deviceBrandLowerCase]
   
@@ -22,8 +25,12 @@ class Database:
     self.deviceBrandLowerCase = deviceBrand.lower()
   
   def isRequireCaseType(self, displayText):
-    caseTypeInfo = self.__getCaseTypeByDisplayText(displayText)
-    return caseTypeInfo['required']
+    try:
+      caseTypeInfo = self.__getCaseTypeByDisplayText(displayText)
+      return caseTypeInfo['required']
+    except:
+      self.__handleCaseTypeNotFound()
+      return False
     
   def getCaseTypeOptName(self, displayText):
     caseTypeInfo = self.__getCaseTypeByDisplayText(displayText)
