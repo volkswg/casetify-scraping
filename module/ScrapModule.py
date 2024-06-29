@@ -62,8 +62,8 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
   if len(colorItems) > 1:
     for eColorBtn in colorItems:
       SB.scrollToElement(driver, eColorBtn)
-      if 'active' not in eColorBtn.get_attribute('class'):
-        eColorBtn.click()
+      # if 'active' not in eColorBtn.get_attribute('class'):
+      eColorBtn.click()
         
       colorDidplayTextElem = driver.find_element(By.XPATH, '//div[@data-label="selected-color-name"]')
       colorInfo = GlobalVar.databaseInstance.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
