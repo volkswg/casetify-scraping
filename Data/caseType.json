@@ -36,6 +36,7 @@
       "colorList": [
         { "displayText": "ดำ", "optValue": "", "required": true  },
         { "displayText": "สีฟ้าคลาสสิก", "optValue": "Blue", "required": true  },
+        { "displayText": "Peach Haze", "optValue": "PH", "required": true  },
         { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
         { "displayText": "Matte Black", "optValue": "Mat", "required": true }
       ]
@@ -81,6 +82,15 @@
     }
   ],
   "samsung":[
+    {
+      "id": "magimpact",
+      "displayText": "เคสกันกระแทกมีแม่เหล็ก",
+      "optValue": "Mag/Impact",
+      "required": false, 
+      "colorList": [
+        { "displayText": "ดำ", "optValue": "", "required": true  }
+      ]
+    },
     {
       "id": "impactringstand",
       "displayText": "เคส Impact Ring Stand",
