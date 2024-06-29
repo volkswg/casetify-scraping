@@ -9,12 +9,12 @@ def calculateSellingPrice(price, preorder=False, colab=False):
   try:
     sellingPrice = GlobalVar.databaseInstance.getSellingPrice(price, colab)
   except:
-    multipyFactor = 1.15
+    multipyFactor = 1.31
     additionalValue = 0
     if preorder == False:
       additionalValue = 300
     if colab == True:
-      multipyFactor = 1.60
+      multipyFactor = 1.50
     sellingPrice = roundUpHundred((price + additionalValue) * multipyFactor) - 1
   # Logger.logDebug(f"price = {price} => {sellingPrice}")
   return sellingPrice
