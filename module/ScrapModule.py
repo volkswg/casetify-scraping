@@ -2,6 +2,15 @@ from module import Logger, String, Data, Math, SeleniumBootstrap as SB, GlobalVa
 from selenium.webdriver.common.by import By
 import time
 
+def checkNewCaseTypeReady(driver):
+  isImageLoaded = False
+  while isImageLoaded == False:
+    Logger.logDebug("loading image...")
+    imageElems = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
+    imageLoadedComplate = imageElems[0].get_attribute('complete')
+    if imageLoadedComplate == 'true':
+      isImageLoaded = True
+
 def getProductTitle(driver):
   titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
   productTitle = titleElem[0].get_attribute('innerHTML')
@@ -143,6 +152,7 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
   for eBtn in caseTypeBtnList:
     if caseTypeBtnListLen > 1:
       clickCaseType(driver, eBtn)
+      checkNewCaseTypeReady(driver)
     caseTypeDisplayText = getCaseTypeDisplayText(driver)
     isRequiredCaseType = GlobalVar.databaseInstance.isRequireCaseType(caseTypeDisplayText)
     if isRequiredCaseType == False:
