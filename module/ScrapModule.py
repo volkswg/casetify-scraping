@@ -3,32 +3,31 @@ from selenium.webdriver.common.by import By
 import time
 
 def checkNewCaseTypeReady(driver):
-  isImageLoaded = False
-  while isImageLoaded == False:
+  while True:
     Logger.logDebug("loading image...")
     imageElems = SB.findElements(driver, By.XPATH, '//div[contains(@class, "slider-container")]/div[contains(@class,"view-port")]/div/img')
-    imageLoadedComplate = imageElems[0].get_attribute('complete')
-    if imageLoadedComplate == 'true':
-      isImageLoaded = True
+    if imageElems and imageElems[0].get_attribute('complete') == 'true':
+      break
 
 def getProductTitle(driver):
-  titleElem = driver.find_elements(By.XPATH, '//div[@data-label="artwork-name"]//span')
-  productTitle = titleElem[0].get_attribute('innerHTML')
-  return productTitle
+  title_elem = driver.find_element(By.XPATH, '//div[@data-label="artwork-name"]/span')
+  return title_elem.get_attribute('innerHTML')
 
 def selectDeviceBrand(driver, brand = 'Apple'):
-    # waiting for device dropdown rendered
-  SB.findElements(driver,By.XPATH, '//div[contains(@class, "device-resolver-drop-down-container")]')
-  deviceBrandSelectorElem = SB.findElements(driver, By.XPATH, '//div[contains(@class, "brand-drop-down-container")]', is_waiting=False)
-  if deviceBrandSelectorElem.__len__() < 1:
+    # Wait for device dropdown to render
+  SB.findElements(driver,By.XPATH, '//div[contains(@class, "device-resolver-container")]')
+  deviceBrandSelectorElems = SB.findElements(driver, By.XPATH, '//div[contains(@class, "brand-drop-down-container")]', is_waiting=False)
+  
+  if not deviceBrandSelectorElems:
     Logger.logWarn('This product only has 1 brand')
-  else:
-    # select device brand
-    deviceBrandSelectorElem = deviceBrandSelectorElem[0]
-    deviceBrandSelectorElem.click()
-    
-    [optionElem] = SB.findElements(driver, By.XPATH, f"//div[contains(@class, \"brand-drop-down-container\")]//option[text()[contains(., \"{brand}\")]]")
-    optionElem.click()
+    return
+  
+  # Select device brand
+  deviceBrandSelectorElems = deviceBrandSelectorElems[0]
+  deviceBrandSelectorElems.click()
+  
+  [optionElem] = SB.findElements(driver, By.XPATH, f'//div[contains(@class, "brand-drop-down-container")]//option[contains(text(), "{brand}")]')
+  optionElem.click()
 
 def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt, is_colabs, is_preorder = False):
   # check item is not available
@@ -51,13 +50,12 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
   # fetch product title here
   productTitle = product_title
   
-  priceElem = case_type_btn.find_element(By.XPATH, './/div[@data-label="case-type-item-price"]')
+  priceElem = case_type_btn.find_element(By.XPATH, '//div[@data-label="case-type-item-price"]')
   price = String.convertPriceToInt(priceElem.text)
   finalPrice = Math.calculateSellingPrice(price, is_preorder, is_colabs)
   
   # fetch color
-  colorItems = SB.findElements(driver, By.XPATH, '//ul[@class="items-container color"]//div[contains(@class, "item")]')
-  
+  colorItems = SB.findElements(driver, By.XPATH, '//ul[@data-label="color-items"]//div[contains(@class, "item")]')
   productDetailList = []
   if len(colorItems) > 1:
     for eColorBtn in colorItems:
@@ -102,19 +100,17 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
   return productDetailList
 
 def clickCaseType(driver, element):
-  retryLimit = 5
-  retryCount = 0
-  while retryCount < retryLimit:
+  for _ in range(5):
     try:
       SB.scrollToElement(driver, element)
       element.click()
       return
     except:
-      retryCount += 1
+      continue
   raise Exception("Error Retry Exceed")
 
 def getCaseTypeDisplayText(driver):
-  [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[@data-label="selected-case-type-name"]/span')
+  [caseTypeDisplayTextElem] = SB.findElements(driver, By.XPATH, '//div[contains(@class, "product-container position-relative current")]//div[@data-label="case-type-name"]/span')
   return caseTypeDisplayTextElem.text
 
 def getCoverImage(driver): 
@@ -141,11 +137,11 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
   Logger.logDebug(f'[Start] Fetching "{productTitle}"')
   
   # waiting for device dropdown rendered
-  selectDeviceBrand(driver, brand)
+  # selectDeviceBrand(driver, brand)
   prodImgUrlList = getCoverImage(driver)
   
   # get all product option
-  caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[contains(@class,"with-product-selector")]/div[contains(@class, "product-selector")]//div[@class="item"]')
+  caseTypeBtnList = SB.findElements(driver, By.XPATH, '//div[@data-label="case-type-items"]//div[contains(@class, "item")]')
   prodOptList = []
   caseTypeBtnListLen = caseTypeBtnList.__len__()
   for eBtn in caseTypeBtnList:
@@ -164,4 +160,3 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
   transformedProdOpts['imageList'] = prodImgUrlList
   Logger.logSuccess(f'[Finish] Fetching "{productTitle}"')
   return transformedProdOpts
-  
