@@ -108,6 +108,7 @@
       "colorList": [
         { "displayText": "ดำ", "optValue": "", "required": true  },
         { "displayText": "Deep Purple", "optValue": "Purple", "required": true },
+        { "displayText": "Peach Haze", "optValue": "PH", "required": true  },
         { "displayText": "Matte Black", "optValue": "Mat", "required": true }
       ]
     },
