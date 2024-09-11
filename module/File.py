@@ -1,32 +1,23 @@
 import shutil
-import os 
+import os
 import json
 
 def readFile(file_name, mode='r'):
-  result = []
   with open(file_name, mode=mode) as f:
-    lines = f.readlines()
-    for line in lines:
-      if line.__len__() > 1:
-        result.append(line.replace('\n', ''))
-  return result
-      
-def writeFile(file_name, data, mode):
+    return [line.strip() for line in f if line.strip()]
+
+def writeFile(file_name, data, mode='w'):
   with open(file_name, mode=mode) as file:
     file.write(data)
-    
-def copyFile(src, des): 
-  return shutil.copyfile(src, des)
+
+def copyFile(src, des):
+  shutil.copyfile(src, des)
 
 def readJSON(filepath):
-  f = open(filepath)
-  data = json.load(f)
-  return data
+  with open(filepath) as f:
+    return json.load(f)
 
 
-# backup function 
-def createDirIfNotExsit(path_dir):
-  if not os.path.exists(path_dir):
-    os.makedirs(path_dir)
-
-  
+# backup function
+def createDirIfNotExist(path_dir):
+    os.makedirs(path_dir, exist_ok=True)
