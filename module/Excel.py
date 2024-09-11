@@ -89,27 +89,13 @@ def editExcelfile(filename, product_list):
 def cleanUpTemplateFile(template_file_name):
   xfile = openpyxl.load_workbook(template_file_name)
   sheet = xfile['แบบฟอร์มการลงสินค้า']
-  startIndex = 7
-  endIndex = 100
-  for index in range(startIndex,endIndex):
-    sheet['A'+str(index)] = '' # category id 
-    sheet['B'+str(index)] = '' # product name
-    sheet['C'+str(index)] = '' # product detail
-    sheet['E'+str(index)] = '' # reset
-    sheet['F'+str(index)] = '' # reset
-    sheet['G'+str(index)] = '' # reset
-    sheet['H'+str(index)] = '' # reset
-    sheet['K'+str(index)] = '' # price
-    sheet['L'+str(index)] = '' # quantiry
-    # add image 
-    picColumn = ['O','P','Q','R','S','T','U','V','W']
-    for columnName in picColumn:
-      sheet[columnName + str(index)] = ''
-    sheet['X'+str(index)] = ''
-    sheet['Y'+str(index)] = ''
-    sheet['Z'+str(index)] = ''
-    sheet['AA'+str(index)] = ''
-    sheet['AB'+str(index)] = ''
-    sheet['AC'+str(index)] = ''
+  startIndex, endIndex = 7, 100
+  columns_to_clear = ['A', 'B', 'C', 'E', 'F', 'G', 'H', 'K', 'L', 'X', 'Y', 'Z', 'AA', 'AB', 'AC']
+  picColumns = ['O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
+  
+  for index in range(startIndex, endIndex):
+    for col in columns_to_clear + picColumns:
+      sheet[f'{col}{index}'] = ''
+  
   xfile.save(template_file_name)
   xfile.close()
