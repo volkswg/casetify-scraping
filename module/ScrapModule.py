@@ -78,7 +78,6 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
         srcUrl = productImageContainer[0].get_attribute('src')
         srcUrl = String.removeExtraFileExt(srcUrl)
         # fetch image =====
-        # Logger.logDebug(colorInfo['optValue'])
         productDetailList.append({
           'title': productTitle,
           'description': 'description',
