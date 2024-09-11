@@ -11,7 +11,7 @@ def writeFile(file_name, data, mode='w'):
     file.write(data)
 
 def copyFile(src, des):
-  shutil.copyfile(src, des)
+  return shutil.copyfile(src, des)
 
 def readJSON(filepath):
   with open(filepath) as f:
