@@ -8,7 +8,6 @@ XPATH_ELEMS = {
   "DEVICE_DROPDOWN_CONTAINER": '//div[contains(@class, "device-resolver-container")]',
   "DEVICE_DROPDOWN_OPTIONS": '//div[contains(@class, "brand-drop-down-container")]',
   "WAITLIST_FORM_CONTAINER": '//div[contains(@class, "waitlist-form-container")]',
-  "PRODUCT_ACTION_BUTTON": '//div[@id="PRODUCT_ACTION"]/div[contains(@class, "product-action-btn-container")]/button[contains(@class, "shopping-cart-button")]',
   "CASE_TYPE_ITEM_PRICE": '//div[contains(@class, "product-container position-relative current")]//div[@data-label="case-type-item-price"]',
   "COLOR_ITEMS": '//ul[@data-label="color-items"]//div[contains(@class, "item")]',
   "SELECTED_COLOR_NAME": '//div[@data-label="selected-color-name"]',
@@ -43,9 +42,7 @@ def selectDeviceBrand(driver, brand = 'Apple'):
 
 def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt, is_colabs, is_preorder = False):
   # check item is not available
-  waitListContainer = driver.find_elements(By.XPATH, XPATH_ELEMS['WAITLIST_FORM_CONTAINER'])
-  isWaitingList = waitListContainer.__len__() > 0
-  if isWaitingList == True:
+  if driver.find_elements(By.XPATH, XPATH_ELEMS['WAITLIST_FORM_CONTAINER']):
     return False
   # download case type image
   productImageContainer = SB.findElements(driver, By.XPATH, XPATH_ELEMS['ARTWORK_IMAGES'])
@@ -53,18 +50,10 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
   
   if imageContanerLen < 1 :
     Logger.logError('Something Error on fetch option image')
-    
-  srcUrl = productImageContainer[0].get_attribute('src')
-  srcUrl = String.removeExtraFileExt(srcUrl)
-  
-  # addToCartBtn = driver.find_elements(By.XPATH, XPATH_ELEMS['PRODUCT_ACTION_BUTTON'])
-  
-  # fetch product title here
-  productTitle = product_title
-  
+
+  srcUrl = String.removeExtraFileExt(productImageContainer[0].get_attribute('src'))
   priceElem = case_type_btn.find_element(By.XPATH, XPATH_ELEMS['CASE_TYPE_ITEM_PRICE'])
   price = String.convertPriceToInt(priceElem.text)
-  Logger.logDebug(price)
   finalPrice = Math.calculateSellingPrice(price, is_preorder, is_colabs)
   
   # fetch color
@@ -77,8 +66,7 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
         
       colorDidplayTextElem = driver.find_element(By.XPATH, XPATH_ELEMS['SELECTED_COLOR_NAME'])
       colorInfo = GlobalVar.databaseInstance.getColorInfo(case_type_display_txt, colorDidplayTextElem.text)
-      if colorInfo != False:
-        
+      if colorInfo:
         # fetch image =====
         productImageContainer = SB.findElements(driver, By.XPATH, XPATH_ELEMS['ARTWORK_IMAGES'])
         imageContanerLen = productImageContainer.__len__()
@@ -86,11 +74,10 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
         if imageContanerLen < 1 :
           Logger.logError('Something Error on fetch option image')
           
-        srcUrl = productImageContainer[0].get_attribute('src')
-        srcUrl = String.removeExtraFileExt(srcUrl)
+        srcUrl = String.removeExtraFileExt(productImageContainer[0].get_attribute('src'))
         # fetch image =====
         productDetailList.append({
-          'title': productTitle,
+          'title': product_title,
           'description': 'description',
           'price': finalPrice,
           'caseType': f"{GlobalVar.databaseInstance.getCaseTypeOptName(case_type_display_txt)}",
@@ -99,7 +86,7 @@ def getProductDetail(driver, product_title, case_type_btn, case_type_display_txt
         })
   else:
     productDetailList.append({
-      'title': productTitle,
+      'title': product_title,
       'description': 'description',
       'price': finalPrice,
       'caseType': GlobalVar.databaseInstance.getCaseTypeOptName(case_type_display_txt),
@@ -158,10 +145,11 @@ def getCaseDataFromUrl(driver, url, shope_name, is_colabs, is_preorder = False, 
       clickCaseType(driver, eBtn)
       checkNewCaseTypeReady(driver)
     caseTypeDisplayText = getCaseTypeDisplayText(driver)
-    Logger.logDebug(caseTypeDisplayText)
     isRequiredCaseType = GlobalVar.databaseInstance.isRequireCaseType(caseTypeDisplayText)
     if isRequiredCaseType == False:
+      Logger.logWarn(f'{caseTypeDisplayText} is not required')
       continue
+    Logger.logSuccess(f'Fetch: {caseTypeDisplayText}')
     detailList = getProductDetail(driver, productTitle, eBtn, caseTypeDisplayText, is_colabs, is_preorder)
     if detailList != False:
       prodOptList = prodOptList + detailList
