@@ -68,9 +68,24 @@
       "order": 3
     },
     {
+      "id": "s23",
+      "name": "S23",
+      "order": 4
+    },
+    {
+      "id": "s23p",
+      "name": "S23+",
+      "order": 5
+    },
+    {
+      "id": "s23u",
+      "name": "S23 U",
+      "order": 6
+    },
+    {
       "id": "dvetc",
       "name": "อื่นๆ ทักแชทเลย",
-      "order": 4
+      "order": 7
     }
   ]
 }
