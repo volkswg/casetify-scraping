@@ -68,17 +68,17 @@ def editExcelfile(filename, product_list):
         sheet['Q' + str(rowNumber)] = quantity # quantiry
         # add image 
         imageList = eProduct['imageList']
-        picColumn = ['T','U','V','W','X','Y','Z','AA','AB']
+        picColumn = ['U','V','W','X','Y','Z','AA','AB', 'AC']
         try:
           for imgListIndex, eImage in enumerate(imageList):
             sheet[picColumn[imgListIndex] + str(rowNumber)] = eImage
         except:
           Logger.logDebug('Image Exceed Limit')
-        sheet['AC' + str(rowNumber)] = '0.3'
-        sheet['AD' + str(rowNumber)] = '12'
-        sheet['AE' + str(rowNumber)] = '22'
-        sheet['AF' + str(rowNumber)] = '3'
-        sheet['AG' + str(rowNumber)] = 'เปิด'
+        sheet['AD' + str(rowNumber)] = '0.3'
+        sheet['AE' + str(rowNumber)] = '12'
+        sheet['AF' + str(rowNumber)] = '22'
+        sheet['AG' + str(rowNumber)] = '3'
+        sheet['AH' + str(rowNumber)] = 'เปิด'
         # sheet['AC' + str(rowNumber)] = 'เปิด'
         rowNumber += 1
   xfile.save(filename)
