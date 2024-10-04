@@ -36,7 +36,7 @@
       "colorList": [
         { "displayText": "ดำ", "optValue": "", "required": true  },
         { "displayText": "สีฟ้าคลาสสิก", "optValue": "Blue", "required": true  },
-        { "displayText": "Peach Haze", "optValue": "PH", "required": true  },
+        { "displayText": "Peach Haze", "optValue": "PH", "required": false  },
         { "displayText": "Cotton Candy", "optValue": "Candy", "required": true },
         { "displayText": "Matte Black", "optValue": "Mat", "required": true }
       ]

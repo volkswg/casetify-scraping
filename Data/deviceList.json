@@ -1,54 +1,59 @@
 {
   "apple": [
     {
-      "id": "dvip15",
-      "name": "iP15",
+      "id": "dvip16promax",
+      "name": "iP16 ProMax",
       "order": 1
     },
     {
-      "id": "dvip15plus",
-      "name": "iP15 Plus",
+      "id": "dvip16pro",
+      "name": "iP16 Pro",
       "order": 2
     },
     {
-      "id": "dvip15pro",
-      "name": "iP15 Pro",
+      "id": "dvip16plus",
+      "name": "iP16 Plus",
       "order": 3
+    },
+    {
+      "id": "dvip16",
+      "name": "iP16",
+      "order": 4
     },
     {
       "id": "dvip15promax",
       "name": "iP15 ProMax",
-      "order": 4
-    },
-    {
-      "id": "dvip14",
-      "name": "iP14",
       "order": 5
     },
     {
-      "id": "dvip14plus",
-      "name": "iP14 Plus",
+      "id": "dvip15pro",
+      "name": "iP15 Pro",
       "order": 6
     },
     {
-      "id": "dvip14pro",
-      "name": "iP14 Pro",
+      "id": "dvip15plus",
+      "name": "iP15 Plus",
       "order": 7
+    },
+    {
+      "id": "dvip15",
+      "name": "iP15",
+      "order": 8
     },
     {
       "id": "dvip14promax",
       "name": "iP14 ProMax",
-      "order": 8
-    },
-    {
-      "id": "dvip13promax",
-      "name": "iP13 ProMax",
       "order": 9
     },
     {
-      "id": "dvetc",
-      "name": "อื่นๆ ทักแชทเลย",
+      "id": "dvip14pro",
+      "name": "iP14 Pro",
       "order": 10
+    },
+    {
+      "id": "dvetc",
+      "name": "สีอื่นๆ ทักแชทเลย",
+      "order": 11
     }
   ],
   "samsung": [
